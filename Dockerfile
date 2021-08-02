@@ -1,12 +1,10 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
-LABEL maintainer="Jaeyoung Chun (chunj@mskcc.org)" \
-      version.velocyto="0.17.17" \
+LABEL maintainer="Julian Hofmann (julian.hofmann@utu.fi)" \
+      original_maintainer="Jaeyoung Chun (chunj@mskcc.org)" \
       version.samtools="1.9" \
-      source.velocyto="https://github.com/velocyto-team/velocyto.py/releases/tag/0.17.17" \
       source.samtools="https://github.com/samtools/samtools/releases/tag/1.9"
 
-ENV VELOCYTO_VERSION 0.17.17
 ENV SAMTOOLS_VERSION 1.9
 
 # required by click
@@ -15,7 +13,7 @@ ENV LANG C.UTF-8
 
 # update package manager, build essentials, and install python 3
 RUN apt-get update \
-    && apt-get install --yes build-essential python3 python3-pip
+    && apt-get install --yes build-essential python3.12
 
 # install dependency required by samtools
 RUN apt-get install --yes wget libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev
@@ -30,11 +28,20 @@ RUN cd /tmp \
     && make install \
     && cd / && rm -rf /tmp/samtools-${SAMTOOLS_VERSION}
 
+FROM python:3.12
+
+LABEL version.velocyto="0.17.17" \
+      source.velocyto="https://github.com/velocyto-team/velocyto.py/releases/tag/0.17.17" 
+
+ENV VELOCYTO_VERSION 0.17.17
+
+RUN python -m pip install --upgrade pip
+
 # install python packages required by velocyto
-RUN pip3 install numpy scipy cython numba matplotlib scikit-learn h5py click
+RUN pip install numpy scipy cython numba matplotlib scikit-learn h5py click
 
 # install velocyto
-RUN pip3 install velocyto==${VELOCYTO_VERSION}
+RUN pip install velocyto==${VELOCYTO_VERSION}
 
 ENTRYPOINT ["velocyto"]
 CMD ["--help"]
