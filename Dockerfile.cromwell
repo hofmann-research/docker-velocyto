@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
-LABEL maintainer="Julian Hofmann (julian.hofmann@utu.fi)" \
-      original_maintainer="Jaeyoung Chun (chunj@mskcc.org)" \
+LABEL comitter="Julian Hofmann (julian.hofmann@utu.fi)" \
+      author="Jaeyoung Chun (chunj@mskcc.org)" \
       version.samtools="1.9" \
       source.samtools="https://github.com/samtools/samtools/releases/tag/1.9"
 
@@ -43,5 +43,5 @@ RUN pip install numpy scipy cython numba matplotlib scikit-learn h5py click
 # install velocyto
 RUN pip install velocyto==${VELOCYTO_VERSION}
 
-# ENTRYPOINT ["velocyto"]
-# CMD ["--help"]
+ENTRYPOINT ["velocyto"]
+CMD ["--help"]
